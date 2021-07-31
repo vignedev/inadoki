@@ -2,6 +2,7 @@
     <head>
         <title>ina_kokoro</title>
         <link rel="stylesheet" href="assets/css/style.css"/>
+        <script src="https://www.youtube.com/iframe_api"></script>
         <script src="assets/js/hrseek.js"></script>
         <script src="assets/js/main.js"></script>
         <meta name="viewport" content="width=device-width">
@@ -17,8 +18,12 @@
 
             <div id="video_section" class="section">
                 <div id="video_container">
+                    <div id="video">
+                        <img draggable=false src="https://cdn.discordapp.com/emojis/754429517317013615.gif"/>
+                        <div>select a video (=w<)b</div>
+                    </div>
                     <!-- <iframe width="100%" height="100%" src="https://www.youtube.com/embed/m_x_aUharLc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
-                    <video src="assets/video/combined.mp4" autoplay controls height="100%"></video>
+                    <!-- <video src="assets/video/combined.mp4" autoplay controls height="100%"></video> -->
                 </div>
             </div>
 
@@ -33,11 +38,11 @@
                         <tbody>
                             <tr>
                                 <th>Peak Heartrate</th>
-                                <td id="peak">0</td>
+                                <td id="peak">???</td>
                             </tr>
                             <tr>
                                 <th>Average</th>
-                                <td id="avg">0</td>
+                                <td id="avg">???</td>
                             </tr>
                         </tbody>
                     </table>

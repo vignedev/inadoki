@@ -15,6 +15,7 @@ class HrSeek{
         this.total_seconds = 0
         this.lower_bound = 70
         this.upper_bound = 150
+        this.player = null
 
         // this.last_mouse_x = 0
         this.needle = 0
@@ -34,6 +35,16 @@ class HrSeek{
         this.canvas.addEventListener('mouseleave', e => {
             this.last_mouse_x = null
         })*/
+
+        this.canvas.addEventListener('mousedown', e => {
+            const rect = this.canvas.getBoundingClientRect()
+            const relative_position = (e.clientX - rect.left) / rect.width
+
+            if(!this.player) return
+
+            this.player.seekTo(relative_position * this.total_seconds)
+            this.needle = relative_position
+        })
 
         this.render()
     }
@@ -69,7 +80,7 @@ class HrSeek{
 
         this.ctx.fillStyle = this.ctx.strokeStyle = '#00000080'
         this.ctx.lineWidth = .5
-        let max = 4
+        let max = 10
         let n = max + 1
         while(n--){
             this.ctx.beginPath()
