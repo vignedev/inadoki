@@ -50,10 +50,10 @@ gather(){
     if [ -z "$VIDEO_ID" -o -z "$VIDEO_TITLE" -o -z "$VIDEO_GAME" -o -z "$VIDEO_EPISODE" ]; then
         error 'Failed to get metadata'
     fi
-    VIDEO_NAME="$VIDEO_GAME"_E"$VIDEO_EPISODE"
+    VIDEO_NAME="$VIDEO_ID" #"$VIDEO_GAME"_E"$VIDEO_EPISODE"
     VIDEO_FILE=$(youtube-dl --get-filename -o "$SOURCE_DEST"/"$VIDEO_NAME"."%(ext)s" "$SOURCE")
 
-    # Actually download the video, 480p is all needed, text is legible and 60fps is wasteful
+    # Actually download the video, 720p is all needed, text is legible and 60fps is wasteful
     if [ $SKIP_DOWNLOAD -ne 1 ]; then
         youtube-dl \
             -f '247' \
@@ -64,11 +64,10 @@ gather(){
         fi
     fi
 
-
     # Generate frames (assuming 30FPS)
     VIDEO_FRAME_DEST="$FRAMES_DEST"/"$VIDEO_NAME"
-    mkdir -p "$VIDEO_FRAME_DEST" || error 'Failed to create destionation for a video frames'
     if [ $SKIP_FRAMER -ne 1 -a ! -d "$VIDEO_FRAME_DEST" ]; then
+        mkdir -p "$VIDEO_FRAME_DEST" || error 'Failed to create destionation for a video frames'
         ffmpeg \
             -ss "$TIME_START" \
             -i "$VIDEO_FILE" \
@@ -90,19 +89,11 @@ gather(){
     echo "frame;hr" > "$VIDEO_DATA_DEST"
 
     export OMP_THREAD_LIMIT=1 # We are running things in parallel, it's better to have single-threaded performance
-    # parallel --progress --eta "$BASE"/ocr.sh ::: "$VIDEO_FRAME_DEST"/*.png >> "$VIDEO_DATA_DEST"
     ls "$VIDEO_FRAME_DEST" | \
         grep -F '.png' | \
         awk 'NR % 15 == 0' | \
         parallel --progress --eta "\"$BASE/ocr.sh\" \"$VIDEO_FRAME_DEST/{}\"" \
         >> "$VIDEO_DATA_DEST"
-
-    # for FRAME in "$VIDEO_FRAME_DEST"/*.png; do
-    #     VIDEO_FRAME_INCREMENT=$((VIDEO_FRAME_INCREMENT + 1))
-    #     HR=$(ocr "$FRAME" | grep -o '[0-9]*' )
-    #     echo " [OCR] $VIDEO_NAME - $FRAME ($VIDEO_FRAME_INCREMENT/$VIDEO_FRAME_COUNT) -- $HR"
-    #     echo "$(basename "$FRAME"),$HR" >> "$VIDEO_DATA_DEST"
-    # done
 
     echo "[SUCCESS] $VIDEO_FILE"
 }
@@ -115,5 +106,10 @@ ocr(){
 }
 
 # RE7 EP1
-gather 'https://www.youtube.com/watch?v=mzR5CjLXZtE' 387 12235
-# gather 'https://www.youtube.com/watch?v=mzR5CjLXZtE' 387 390
+# gather 'https://www.youtube.com/watch?v=mzR5CjLXZtE' 387 12235
+
+# RE7 EP2
+gather 'https://www.youtube.com/watch?v=fIO0V-BdlVQ' 266 17117
+
+# RE7 EP3
+# gather 'https://www.youtube.com/watch?v=xBp10i8Noqo' 180 11081

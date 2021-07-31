@@ -3,7 +3,7 @@ const fs = require('fs')
 const data = fs.readdirSync(__dirname + '/data').map(x => ({
     real: __dirname + '/data/' + x,
     name: x
-})).filter(x => x.name.endsWith('.csv'))
+})).filter(x => x.name.toLowerCase().endsWith('.csv'))
 
 for(const csv of data){
     let file = fs.readFileSync(csv.real, 'utf8')
@@ -15,9 +15,10 @@ for(const csv of data){
             return { frame: parseInt(frame), hr: parseInt(hr) }
         })
         .sort((a,b) => a.frame - b.frame)
-    fs.writeFileSync(__dirname + '/../web/assets/json/' + csv.name + '.json', JSON.stringify({
+    fs.writeFileSync(__dirname + '/../web/assets/json/' + csv.name.replace('.csv', '') + '.json', JSON.stringify({
         peak: file.reduce((acc,val) => Math.max(acc, val.hr), 0),
         avg: file.reduce((acc,val) => acc + val.hr, 0) / file.length,
+        min: file.reduce((acc,val) => Math.min(acc, val.hr), 9999),
         data: file
     }))
 }

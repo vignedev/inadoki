@@ -5,10 +5,29 @@ window.onload = async e => {
     const
         videoPeak = document.querySelector('#video_stat #peak'),
         videoAvg = document.querySelector('#video_stat #avg'),
+        videoMin = document.querySelector('#video_stat #min'),
         videoContainer = document.querySelector('#video_container'),
-        videoSelect = document.querySelector('#video_select')
+        videoSelect = document.querySelector('#video_select'),
+        dummyOption = document.querySelector('#dummy_option')
 
     let player = null
+
+    try{
+        const videos = await (await fetch('assets/json/videos.json')).json()
+        dummyOption.innerText = 'select a video (=w<)b<'
+        videoSelect.disabled = false
+
+        for(const [id, title] of Object.entries(videos)){
+            const option = document.createElement('option')
+            option.value = id
+            option.innerText = title
+            videoSelect.appendChild(option)
+        }
+    }catch(err){
+        dummyOption.innerText = 'Failed to load videos (´°ω°`)'
+        return
+    }
+
 
     videoSelect.onchange = async e => {
         await loadVideo(e.target.value)
@@ -16,9 +35,13 @@ window.onload = async e => {
 
     async function loadVideo(id){
         try{
+            hrSeek.needle = 0
+            hrSeek.update([], 0)
+
             const data = await (await fetch(`assets/json/${id}.json`)).json()
             videoPeak.innerText = data.peak.toFixed(2) + ' bpm'
             videoAvg.innerText = data.avg.toFixed(2) + ' bpm'
+            videoMin.innerText = data.min.toFixed(2) + ' bpm'
 
             if(player) player.destroy()
             hrSeek.player = player = null
