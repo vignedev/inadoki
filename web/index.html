@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <title>ina_kokoro</title>
+        <link rel="stylesheet" href="assets/css/style.css"/>
+        <script src="assets/js/hrseek.js"></script>
+        <script src="assets/js/main.js"></script>
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <body>
+        <div class="container">
+            <img draggable="false" id="header" src="assets/img/Header.svg"/>
+
+            <select id="video_select" class="section">
+                <option value="" selected disabled hidden>Select a video ( =w=)b</option>
+                <option value="mzR5CjLXZtE">【Resident Evil 7: Biohazard】 W-W-WAH 【#1】</option>
+            </select>
+
+            <div id="video_section" class="section">
+                <div id="video_container">
+                    <!-- <iframe width="100%" height="100%" src="https://www.youtube.com/embed/m_x_aUharLc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+                    <video src="assets/video/combined.mp4" autoplay controls height="100%"></video>
+                </div>
+            </div>
+
+            <canvas id="hr_section" class="section">
+
+            </canvas>
+
+            <div id="statistics">
+                <div id="video_stat" class="section">
+                    <h1>Video Statistics</h1>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>Peak Heartrate</th>
+                                <td id="peak">0</td>
+                            </tr>
+                            <tr>
+                                <th>Average</th>
+                                <td id="avg">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="total_stat" class="section">
+                    <h1>Total Statistics</h1>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>Peak Heartrate</th>
+                                <td>(o w <) wip!</td>
+                            </tr>
+                            <tr>
+                                <th>Average</th>
+                                <td>(o w <) wip!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="info" class="section text_section">
+                <div>
+                    <h1>Possible Questions You May Have</h1>
+
+                    <ol>
+                        <li>Why?</li>
+                        <div>Because it was 4AM and my mind wouldn’t stop, so one thing lead to another and here we are.</div>
+
+                        <li>How?</li>
+                        <div>Simply, I just set up an OCR to read the bottom right corner and write down the results at the specific time. I have released the source code and all that jazz on my GitHub repository here, which also includes my thought process and additional comments. Please bare in mind that it was 4AM, the quality of it may not be as clear as it could be.</div>
+
+                        <li>Can I get the dataset?</li>
+                        <div>Sure mate, that’s also available in the source code repository.</div>
+
+                        <li>Go to bed.</li>
+                        <div>Oh boy, I wish.</div>
+
+                        <li>Some videos are missing, why?</li>
+                        <div>It takes quite some time to analyze the stream (roughly an hour to finish an 3h stream). Please be patient as I slowly add them.</div>
+                    </ol>
+                </div>
+            </div>
+
+            <div id="credits" class="section text_section">
+                <div>
+                    <h1>Credit & Sources</h1>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>Ninomae Ina'nis</th>
+                                <td>the priestess, vtuber</td>
+                                <td>yt, twt</td>
+                            </tr>
+                            <tr>
+                                <th>vignedev</th>
+                                <td>scripting, data collection, web</td>
+                                <td>yt, twt, gthb</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

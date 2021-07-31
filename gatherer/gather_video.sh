@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+
+# Global settings
+export TESSDATA_PREFIX="$HOME/Git/tessdata"
+BASE=$(dirname "$0")
+TITLE='%(title)s_%(id)s.%(ext)s'
+
+SOURCE_DEST="$BASE"/source
+FRAMES_DEST="$BASE"/frames
+DATA_DEST="$BASE"/data
+
+SKIP_DOWNLOAD=0
+SKIP_FRAMER=0
+
+# Cleanup
+if [ "$1" == "clean" ]; then
+    echo "Cleaning up..."
+    rm -rf "$SOURCE_DEST"
+    rm -rf "$FRAMES_DEST"
+    rm -rf "$DATA_DEST"
+fi
+if [ "$1" == "clean_frames" ]; then
+    echo "Cleaning up..."
+    rm -rf "$FRAMES_DEST"
+fi
+
+# Create a storage for downloaded videos and frames
+mkdir -p "$SOURCE_DEST" || error 'Failed to create destination for source videos'
+mkdir -p "$FRAMES_DEST" || error 'Failed to create destination for video frames'
+mkdir -p "$DATA_DEST" || error 'Failed to create destination for video data'
+
+gather(){
+    # Config & Preparation
+    error() { echo "[ERROR]: $@"; exit 1; }
+    SOURCE="$1"
+    TIME_START="$2"
+    TIME_END="$3"
+    TIME_LENGTH=$(bc <<< "$3 - $2")
+    CROP="in_w*(150/1920):in_h*(115/1080):in_w*(1240/1920):in_h*(965/1080)"
+    if [ $# -ne 3 ]; then
+        error "Argument count doesnt match, should be 4 ($0 <time_start> <time_end> <crop>)"
+    fi
+
+    # Get a few metadata
+    VIDEO_TITLE=$(youtube-dl --get-title "$SOURCE")
+    VIDEO_ID=$(grep -Po '(?<=[?&]v=)(.*?)(?=&|$)' <<< "$SOURCE")
+    # Because Ina deligently formats her stream titles, we can easily extract the *game* and *episode*
+    VIDEO_GAME=$(grep -Po '(?<=^【)(.*?)(?=】)' <<< "$VIDEO_TITLE")
+    VIDEO_EPISODE=$(grep -Po '(?<=【#)(\d+)(?=】)' <<< "$VIDEO_TITLE")
+    if [ -z "$VIDEO_ID" -o -z "$VIDEO_TITLE" -o -z "$VIDEO_GAME" -o -z "$VIDEO_EPISODE" ]; then
+        error 'Failed to get metadata'
+    fi
+    VIDEO_NAME="$VIDEO_GAME"_E"$VIDEO_EPISODE"
+    VIDEO_FILE=$(youtube-dl --get-filename -o "$SOURCE_DEST"/"$VIDEO_NAME"."%(ext)s" "$SOURCE")
+
+    # Actually download the video, 480p is all needed, text is legible and 60fps is wasteful
+    if [ $SKIP_DOWNLOAD -ne 1 ]; then
+        youtube-dl \
+            -f '247' \
+            -o "$VIDEO_FILE" \
+            "$SOURCE"
+        if [ $? -ne 0 ]; then
+            error 'Failed to download video'
+        fi
+    fi
+
+
+    # Generate frames (assuming 30FPS)
+    VIDEO_FRAME_DEST="$FRAMES_DEST"/"$VIDEO_NAME"
+    mkdir -p "$VIDEO_FRAME_DEST" || error 'Failed to create destionation for a video frames'
+    if [ $SKIP_FRAMER -ne 1 -a ! -d "$VIDEO_FRAME_DEST" ]; then
+        ffmpeg \
+            -ss "$TIME_START" \
+            -i "$VIDEO_FILE" \
+            -t "$TIME_LENGTH" \
+            -vf "crop=$CROP" \
+            -start_number $(bc <<< "$TIME_START * 30") \
+            -hide_banner -loglevel quiet -stats -y \
+            "$VIDEO_FRAME_DEST"/"%08d.png"
+        if [ $? -ne 0 ]; then
+            error 'Failed to convert to frames'
+        fi
+    fi
+
+    # Convert those frames back into values
+    VIDEO_FRAME_COUNT=$(ls "$VIDEO_FRAME_DEST" | wc -l)
+    VIDEO_FRAME_INCREMENT=0
+
+    VIDEO_DATA_DEST="$DATA_DEST"/"$VIDEO_NAME".csv
+    echo "frame;hr" > "$VIDEO_DATA_DEST"
+
+    export OMP_THREAD_LIMIT=1 # We are running things in parallel, it's better to have single-threaded performance
+    # parallel --progress --eta "$BASE"/ocr.sh ::: "$VIDEO_FRAME_DEST"/*.png >> "$VIDEO_DATA_DEST"
+    ls "$VIDEO_FRAME_DEST" | \
+        grep -F '.png' | \
+        awk 'NR % 15 == 0' | \
+        parallel --progress --eta "\"$BASE/ocr.sh\" \"$VIDEO_FRAME_DEST/{}\"" \
+        >> "$VIDEO_DATA_DEST"
+
+    # for FRAME in "$VIDEO_FRAME_DEST"/*.png; do
+    #     VIDEO_FRAME_INCREMENT=$((VIDEO_FRAME_INCREMENT + 1))
+    #     HR=$(ocr "$FRAME" | grep -o '[0-9]*' )
+    #     echo " [OCR] $VIDEO_NAME - $FRAME ($VIDEO_FRAME_INCREMENT/$VIDEO_FRAME_COUNT) -- $HR"
+    #     echo "$(basename "$FRAME"),$HR" >> "$VIDEO_DATA_DEST"
+    # done
+
+    echo "[SUCCESS] $VIDEO_FILE"
+}
+
+ocr(){
+    time "$BASE"/ocr.sh "$1"
+    if [ $? -ne 0 ]; then
+        error "Failed to OCR image ($1)"
+    fi
+}
+
+# RE7 EP1
+gather 'https://www.youtube.com/watch?v=mzR5CjLXZtE' 387 12235
+# gather 'https://www.youtube.com/watch?v=mzR5CjLXZtE' 387 390
