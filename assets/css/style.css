@@ -24,7 +24,7 @@ body{
     justify-content: center;
     align-items: center;
     max-width: 80vw;
-    width: 60rem;
+    width: 67.5rem;
     padding-bottom: 10rem;
 }
 .container > * {
@@ -81,7 +81,8 @@ select#video_select{
 
 #hr_section{
     background-color: #e1d8ef;
-    height: 100px;
+    height: 256px;
+    width: 90vw;
 }
 
 #statistics{
@@ -160,4 +161,13 @@ td{
 }
 #credits td:nth-child(2){
     text-align: center;
+}
+
+div#video{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    user-select: none;
 }
