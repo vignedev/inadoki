@@ -37,6 +37,7 @@ window.onload = async e => {
         try{
             hrSeek.needle = 0
             hrSeek.update([], 0)
+            videoPeak.innerText = videoAvg.innerText = videoMin.innerText = '???'
 
             const data = await (await fetch(`assets/json/${id}.json`)).json()
             videoPeak.innerText = data.peak.toFixed(2) + ' bpm'
@@ -58,7 +59,7 @@ window.onload = async e => {
                 }
             })
         }catch(err){
-            alert('Failed to get video ID\'s HR data. vignedev f-word up.')
+            alert('Sorry, couldn\'t load the video HR data! (︶︹︺)\nTry again later or a different video.')
             console.error(err)
             return
         }

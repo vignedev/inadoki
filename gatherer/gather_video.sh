@@ -109,7 +109,16 @@ ocr(){
 # gather 'https://www.youtube.com/watch?v=mzR5CjLXZtE' 387 12235
 
 # RE7 EP2
-gather 'https://www.youtube.com/watch?v=fIO0V-BdlVQ' 266 17117
+# gather 'https://www.youtube.com/watch?v=fIO0V-BdlVQ' 266 17117
 
 # RE7 EP3
 # gather 'https://www.youtube.com/watch?v=xBp10i8Noqo' 180 11081
+
+# 【SOMA】 SO MAny Places to Explore!! 【#1】
+gather 'https://www.youtube.com/watch?v=5kaQs6GAeII' 210 11420
+
+# 【SOMA】 No Food Wars Here 【#2】
+gather 'https://www.youtube.com/watch?v=5uDMkQ38b3k' 227 15697
+
+# 【SOMA】 Robodachiiiiii 【#3】
+gather 'https://www.youtube.com/watch?v=nj1GHW0ytq4' 0 100
