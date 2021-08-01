@@ -1,16 +1,10 @@
-# ina_kokoro
+# inadoki
 
-HR log of Ina's horror week.
+Ina streamed with a heartrate monitor during her Horror week. So, naturally, someone had to create a log of it... right?
 
-The project is "separated" into two folders: the `web` and the `gatherer`, which is responsible for the data collection. More information on both of these parts below.
+## Data gatherer
 
-## `web`
-
-Yes, the web is written in pure HTML, JS and CSS. It was because I was running low at memory during the time I started doing this so didn't want to pull any heavy frameworks and/or libraries. 
-
-And besides, it works as it should (or at least I hope so...)
-
-## `gatherer`
+This branch is solely for the the data gathering part from the streams, for the web source code (as well as pre-generated JSON files) check out the `web` branch.
 
 For `gatherer`, you'll most likely need a UNIX system that has the following:
 
@@ -42,7 +36,7 @@ Unfortunate thing about this automatic method is that `tesseract` did mistakes h
 
 Another thing about `tesseract` is that running I am running them in parallel using `parallel`, that's why in `./gather_video.sh` you see the `export OMP_THREAD_LIMIT=1`, so all CPU threads are utilized to its fullest. The OCR process itself takes approximately 30 minutes on a 8 thread CPU with a 3 hour stream.
 
-After all of that is done, the downloaded stream is located at `gatherer/source`, individual frames at `gatherer/frames` and the finished CSV with the values in `gatherer/data`. For the web usage however, there is an extra script called `reparse.js`, which just takes all the data from the folder, calculates a few extra things and puts it together into a JSON, which is then placed into the web directory.
+After all of that is done, the downloaded stream is located at `gatherer/source`, individual frames at `gatherer/frames` and the finished CSV with the values in `gatherer/data`. For the web usage however, there is an extra script called `reparse.js`, which just takes all the data from the folder, calculates a few extra things and puts it together into a JSON, which is then placed into the `json` folder.
 
 ## License
 

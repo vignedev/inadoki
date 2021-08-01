@@ -136,7 +136,7 @@ ocr(){
 # gather 'https://www.youtube.com/watch?v=5kaQs6GAeII' 210 11420
 
 # 【SOMA】 No Food Wars Here 【#2】
-gather 'https://www.youtube.com/watch?v=5uDMkQ38b3k' 227 15697
+# gather 'https://www.youtube.com/watch?v=5uDMkQ38b3k' 227 15697
 
 # 【SOMA】 Robodachiiiiii 【#3】
-gather 'https://www.youtube.com/watch?v=nj1GHW0ytq4' 254 13771
+# gather 'https://www.youtube.com/watch?v=nj1GHW0ytq4' 254 13771

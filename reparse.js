@@ -1,5 +1,7 @@
 const fs = require('fs')
 
+fs.mkdirSync(__dirname + '/json/videos/', { recursive: true })
+
 const data = fs.readdirSync(__dirname + '/data').map(x => ({
     real: __dirname + '/data/' + x,
     name: x
@@ -41,11 +43,11 @@ for(const csv of data){
     total_stats.peak = Math.max(peak, total_stats.peak)
     total_stats.min = Math.min(min, total_stats.min)
 
-    fs.writeFileSync(__dirname + '/../web/assets/json/videos/' + csv.name.replace('.csv', '') + '.json', JSON.stringify({
+    fs.writeFileSync(__dirname + '/json/videos/' + csv.name.replace('.csv', '') + '.json', JSON.stringify({
         peak, avg, min,
         data: file
     }))
 }
 
 total_stats.avg = sum / count
-fs.writeFileSync(__dirname + '/../web/assets/json/stats.json', JSON.stringify(total_stats))
+fs.writeFileSync(__dirname + '/json/stats.json', JSON.stringify(total_stats))
