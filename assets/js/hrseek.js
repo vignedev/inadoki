@@ -63,7 +63,7 @@ class HrSeek{
             const rect = this.canvas.getBoundingClientRect()
             const relative_position = (e.clientX - rect.left) / rect.width
 
-            if(!this.player) return
+            if(!this.player || !this.player.seekTo) return
             this.player.seekTo(relative_position * this.total_seconds)
             this.needle = relative_position
             this.preview_needle = null
@@ -147,7 +147,7 @@ class HrSeek{
         this.framebuffer.clearRect(0, 0, this.canvas.width, this.canvas.height)
         
         // Draw lines & legend behind
-        this.framebuffer.fillStyle = this.framebuffer.strokeStyle = '#00000080'
+        this.framebuffer.fillStyle = this.framebuffer.strokeStyle = 'rgba(0, 0, 0, 0.501960784)'
         this.framebuffer.lineWidth = .5
         let max = 10
         let n = max + 1
@@ -198,7 +198,7 @@ class HrSeek{
         this.ctx.drawImage(this.fbElement, 0, 0)
 
         // Rendering the needle
-        this.ctx.strokeStyle = '#ff000070'
+        this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.439215686)'
         this.ctx.lineWidth = 2
         this.ctx.beginPath()
         this.ctx.moveTo(this.needle * this.canvas.width, 0)
@@ -215,7 +215,7 @@ class HrSeek{
                 y: this.preview_needle.position[1] * this.canvas.height
             }
 
-            this.ctx.fillStyle = this.ctx.strokeStyle = '#0000ff70'
+            this.ctx.fillStyle = this.ctx.strokeStyle = 'rgba(0, 0, 255, 0.439215686)'
             if(this.preview_needle_y){
                 let hr_y = (1.0 - ((this.preview_needle.hr-this.lower_bound) / (this.upper_bound-this.lower_bound))) * this.canvas.height
                 let box_position = {
