@@ -268,16 +268,16 @@ a.icon:hover{
     opacity: 1.0;
 }
 .icon.youtube{
-    mask-image: url('/assets/img/si/youtube.svg');
-    -webkit-mask-image: url('/assets/img/si/youtube.svg');
+    mask-image: url('../img/si/youtube.svg');
+    -webkit-mask-image: url('../img/si/youtube.svg');
 }
 .icon.twitter{
-    mask-image: url('/assets/img/si/twitter.svg');
-    -webkit-mask-image: url('/assets/img/si/twitter.svg');
+    mask-image: url('../img/si/twitter.svg');
+    -webkit-mask-image: url('../img/si/twitter.svg');
 }
 .icon.github{
-    mask-image: url('/assets/img/si/github.svg');
-    -webkit-mask-image: url('/assets/img/si/github.svg');
+    mask-image: url('../img/si/github.svg');
+    -webkit-mask-image: url('../img/si/github.svg');
 }
 
 #chart_control{
