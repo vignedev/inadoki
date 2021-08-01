@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # Global settings
-export TESSDATA_PREFIX="$HOME/Git/tessdata"
 BASE=$(dirname "$0")
 TITLE='%(title)s_%(id)s.%(ext)s'
 
@@ -28,6 +27,8 @@ if [ "$1" == "clean_frames" ]; then
 
     exit 0
 fi
+
+# Experimental trim
 if [ "$1" == "trim" ]; then
     echo "Trimming frames..."
 
