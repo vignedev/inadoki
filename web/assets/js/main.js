@@ -35,7 +35,7 @@ window.onload = async e => {
             videoPeak.innerText = videoAvg.innerText = videoMin.innerText = '???'
             if(player) player.destroy()
 
-            const data = await (await fetch(`assets/json/${id}.json`)).json()
+            const data = await (await fetch(`assets/json/videos/${id}.json`)).json()
             videoPeak.innerText = data.peak?.toFixed(2) + ' bpm'
             videoAvg.innerText  = data.avg?.toFixed(2) + ' bpm'
             videoMin.innerText  = data.min?.toFixed(2) + ' bpm'
