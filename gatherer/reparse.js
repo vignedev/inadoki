@@ -15,10 +15,12 @@ for(const csv of data){
             return { frame: parseInt(frame), hr: parseInt(hr) }
         })
         .sort((a,b) => a.frame - b.frame)
+    
+    let empty_hr_count = 0
     fs.writeFileSync(__dirname + '/../web/assets/json/' + csv.name.replace('.csv', '') + '.json', JSON.stringify({
-        peak: file.reduce((acc,val) => Math.max(acc, val.hr), 0),
-        avg: file.reduce((acc,val) => acc + val.hr, 0) / file.length,
-        min: file.reduce((acc,val) => Math.min(acc, val.hr), 9999),
+        peak: file.reduce((acc,val) => val.hr ? Math.max(acc, val.hr) : acc, 0),
+        avg: file.reduce((acc,val) => {if(!val.hr){empty_hr_count++; return acc} return acc + val.hr}, 0) / (file.length - empty_hr_count),
+        min: file.reduce((acc,val) => val.hr ? Math.min(acc, val.hr) : acc, 9999),
         data: file
     }))
 }

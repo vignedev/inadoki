@@ -24,7 +24,7 @@ body{
     justify-content: center;
     align-items: center;
     max-width: 80vw;
-    width: 67.5rem;
+    width: 50rem; /* 67.5rem */
     padding-bottom: 10rem;
 }
 .container > * {
@@ -50,7 +50,7 @@ h1{
 
 #header {
     user-select: none;
-    padding-top: 64px;
+    padding-top: 10vmin;
 }
 
 select#video_select{
@@ -170,4 +170,21 @@ div#video{
     align-items: center;
     color: white;
     user-select: none;
+}
+
+s{
+    text-decoration-thickness: 100%;
+    user-select: none;
+}
+
+/*  Test Overwrite  */
+#video_section{
+    margin-bottom: 0;
+    border-radius: 8px 8px 0 0;
+}
+#video_select{
+    margin-top: 0;
+    border-radius: 0 0 8px 8px;
+    z-index: 1;
+    border: none !important;
 }

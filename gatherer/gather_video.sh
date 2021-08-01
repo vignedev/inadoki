@@ -9,8 +9,9 @@ SOURCE_DEST="$BASE"/source
 FRAMES_DEST="$BASE"/frames
 DATA_DEST="$BASE"/data
 
-SKIP_DOWNLOAD=0
-SKIP_FRAMER=0
+SKIP_DOWNLOAD=1
+SKIP_FRAMER=1
+SKIP_OCR=0
 
 # Cleanup
 if [ "$1" == "clean" ]; then
@@ -56,7 +57,7 @@ gather(){
     # Actually download the video, 720p is all needed, text is legible and 60fps is wasteful
     if [ $SKIP_DOWNLOAD -ne 1 ]; then
         youtube-dl \
-            -f '247' \
+            -f '247/136' \
             -o "$VIDEO_FILE" \
             "$SOURCE"
         if [ $? -ne 0 ]; then
@@ -86,14 +87,17 @@ gather(){
     VIDEO_FRAME_INCREMENT=0
 
     VIDEO_DATA_DEST="$DATA_DEST"/"$VIDEO_NAME".csv
-    echo "frame;hr" > "$VIDEO_DATA_DEST"
+    
+    if [ $SKIP_OCR -ne 1 ]; then
+        echo "frame;hr" > "$VIDEO_DATA_DEST"
 
-    export OMP_THREAD_LIMIT=1 # We are running things in parallel, it's better to have single-threaded performance
-    ls "$VIDEO_FRAME_DEST" | \
-        grep -F '.png' | \
-        awk 'NR % 15 == 0' | \
-        parallel --progress --eta "\"$BASE/ocr.sh\" \"$VIDEO_FRAME_DEST/{}\"" \
-        >> "$VIDEO_DATA_DEST"
+        export OMP_THREAD_LIMIT=1 # We are running things in parallel, it's better to have single-threaded performance
+        ls "$VIDEO_FRAME_DEST" | \
+            grep -F '.png' | \
+            awk 'NR % 15 == 0' | \
+            parallel --progress --eta "\"$BASE/ocr.sh\" \"$VIDEO_FRAME_DEST/{}\"" \
+            >> "$VIDEO_DATA_DEST"
+    fi
 
     echo "[SUCCESS] $VIDEO_FILE"
 }
@@ -105,20 +109,20 @@ ocr(){
     fi
 }
 
-# RE7 EP1
+# 【Resident Evil 7: Biohazard】 W-W-WAH 【#1】
 # gather 'https://www.youtube.com/watch?v=mzR5CjLXZtE' 387 12235
 
-# RE7 EP2
+# 【Resident Evil 7: Biohazard】 143 【#2】
 # gather 'https://www.youtube.com/watch?v=fIO0V-BdlVQ' 266 17117
 
-# RE7 EP3
+# 【Resident Evil 7: Biohazard】 Is This the End...? 【#3】
 # gather 'https://www.youtube.com/watch?v=xBp10i8Noqo' 180 11081
 
 # 【SOMA】 SO MAny Places to Explore!! 【#1】
 gather 'https://www.youtube.com/watch?v=5kaQs6GAeII' 210 11420
 
 # 【SOMA】 No Food Wars Here 【#2】
-gather 'https://www.youtube.com/watch?v=5uDMkQ38b3k' 227 15697
+# gather 'https://www.youtube.com/watch?v=5uDMkQ38b3k' 227 15697
 
 # 【SOMA】 Robodachiiiiii 【#3】
-gather 'https://www.youtube.com/watch?v=nj1GHW0ytq4' 0 100
+# gather 'https://www.youtube.com/watch?v=nj1GHW0ytq4' 0 100
