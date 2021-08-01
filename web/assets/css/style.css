@@ -46,6 +46,7 @@ h1{
 .section{
     box-shadow: 0 4px 16px 0 rgba(0, 0, 0, .25);
     border-radius: 8px;
+    overflow: hidden;
 }
 
 #header {
@@ -119,6 +120,13 @@ button:disabled, select:disabled{
     width: 90vw;
     cursor: pointer;
     font-size: .7rem;
+    position: relative;
+}
+#hr_chart{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0; top: 0; right: 0; bottom: 0;
 }
 
 #statistics{
@@ -187,6 +195,9 @@ td{
     #statistics > *:first-child {
         margin-bottom: 1em !important;
     }
+    #footer{
+        font-size: .7em;
+    }
 }
 
 #credits{
@@ -225,6 +236,7 @@ s{
     justify-content: center;
     align-items: center;
     color: white;
+    overflow: hidden;
 }
 
 #footer > span{
@@ -266,4 +278,53 @@ a.icon:hover{
 .icon.github{
     mask-image: url('/assets/img/si/github.svg');
     -webkit-mask-image: url('/assets/img/si/github.svg');
+}
+
+#chart_control{
+    transition: all .5s cubic-bezier(.3,1.01,.61,.99);
+    max-height: 5em;
+}
+
+#chart_control.closed{
+    max-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#chart_control > div{
+    background: white;
+    padding: 1em 2em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+#chart_control label{
+    padding-right: .5em;
+    font-weight: 900;
+    font-style: italic;
+}
+#chart_control input{
+    width: 100%;
+}
+
+#hr_settings_toggle{
+    position: absolute;
+    right: 1em;
+    bottom: 1em;
+    border-radius: 8px;
+    outline: none;
+    border: none;
+    padding: .5em;
+    background: var(--ika-purple);
+    transition: background .1s, opacity .3s;
+    cursor: pointer;
+    opacity: .5;
+}
+#hr_settings_toggle:hover{
+    opacity: 1.0;
+    /* background: #7a728f; */
+}
+#hr_settings_toggle:active{
+    background: #3a3544;
 }

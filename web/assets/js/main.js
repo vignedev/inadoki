@@ -1,6 +1,6 @@
 window.onload = async e => {
     const
-        hrSeek = new HrSeek('canvas#hr_section'),
+        hrSeek = new HrSeek('canvas#hr_chart'),
         footer = document.querySelector('#random_footer')
     const
         videoPeak   = document.querySelector('#video_stat #peak'),
@@ -9,7 +9,10 @@ window.onload = async e => {
         videoSelect = document.querySelector('#video_select select'),
         dummyOption = document.querySelector('#dummy_option'),
         jsonDlBtn   = document.querySelector('button#jsonDl'),
-        csvDlBtn    = document.querySelector('button#csvDl')
+        csvDlBtn    = document.querySelector('button#csvDl'),
+        simplifyIn  = document.querySelector('input#simplify'),
+        chartControl= document.querySelector('#chart_control'),
+        settingsBtn = document.querySelector('#hr_settings_toggle')
     const
         totalPeak   = document.querySelector('#total_stat #peak'),
         totalAvg    = document.querySelector('#total_stat #avg'),
@@ -20,6 +23,11 @@ window.onload = async e => {
     jsonDlBtn.onclick = e => download(`assets/json/videos/${videoSelect.value}.json`, `${videoSelect.value}.json`)
     csvDlBtn.onclick = e => download(`assets/csv/videos/${videoSelect.value}.csv`, `${videoSelect.value}.csv`)
     videoSelect.onchange = async e => await loadVideo(e.target.value)
+    simplifyIn.oninput = simplifyIn.onchange = e => {
+        hrSeek.simplify = e.target.max - e.target.value
+        hrSeek.generateChart()
+    }
+    settingsBtn.onclick = e => chartControl.classList.toggle('closed')
 
     // Optional and not-so-necessary portion, get the total statistics
     fetch('assets/json/stats.json').then(res => res.json())
@@ -58,8 +66,16 @@ window.onload = async e => {
         'with 4h naps',
         'with pain tako',
         'with aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        //'with a 3d model in the works (shh)' // little teaser ow<
+        'wah'
     ]
     footer.innerText = messages[Math.floor(Math.random() * messages.length)]
+
+    // YouTube's iframe API doesn't provide any events for time change, so we need to monitor it ourself
+    setInterval(() => {
+        if(!player && !player.getCurrentTime && !player.getDuration) return
+        hrSeek.needle = (player.getCurrentTime() / player.getDuration())
+    }, 1000) // check every second, we don't need maximum precision
 
     /** Loads up a video and updates the HR chart
      * @param {string} id YouTube stream's ID */
