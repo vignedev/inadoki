@@ -320,6 +320,7 @@ a.icon:hover{
     transition: background .1s, opacity .3s;
     cursor: pointer;
     opacity: .5;
+    color: white;
 }
 #hr_settings_toggle:hover{
     opacity: 1.0;

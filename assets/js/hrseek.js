@@ -1,5 +1,3 @@
-
-
 class HrSeek{
     /** @param {string} selector CSS selector of the target canvas */
     constructor(selector){
