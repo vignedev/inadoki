@@ -64,6 +64,7 @@ class HrSeek{
             if(!this.player) return
             this.player.seekTo(relative_position * this.total_seconds)
             this.needle = relative_position
+            this.preview_needle = null
         })
 
         // Make a preview needle

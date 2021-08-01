@@ -32,7 +32,7 @@ window.onload = async e => {
     // Main portion, create UI elements, load the videos
     try{
         const videos = await (await fetch('assets/json/videos.json')).json()
-        dummyOption.innerText = 'select a video (=w<)b'
+        dummyOption.innerText = 'select a video here (=w<)b'
         videoSelect.disabled = false
         jsonDlBtn.disabled = csvDlBtn.disabled = true
 
