@@ -1,15 +1,11 @@
 window.onload = async e => {
+    const hrSeek = new HrSeek('canvas#hr_section')
     const
-        hrSeek = new HrSeek('canvas#hr_section')
-
-    const
-        videoPeak = document.querySelector('#video_stat #peak'),
-        videoAvg = document.querySelector('#video_stat #avg'),
-        videoMin = document.querySelector('#video_stat #min'),
-        videoContainer = document.querySelector('#video_container'),
+        videoPeak   = document.querySelector('#video_stat #peak'),
+        videoAvg    = document.querySelector('#video_stat #avg'),
+        videoMin    = document.querySelector('#video_stat #min'),
         videoSelect = document.querySelector('#video_select'),
         dummyOption = document.querySelector('#dummy_option')
-
     let player = null
 
     try{
@@ -24,25 +20,25 @@ window.onload = async e => {
             videoSelect.appendChild(option)
         }
     }catch(err){
-        dummyOption.innerText = 'Failed to load videos (´°ω°`)'
+        dummyOption.innerText = 'Failed to load videos (´°ω°`) sorry...'
         return
     }
 
+    videoSelect.onchange = async e => await loadVideo(e.target.value)
 
-    videoSelect.onchange = async e => {
-        await loadVideo(e.target.value)
-    }
-
+    /** Loads up a video and updates the HR chart
+     * @param {string} id YouTube stream's ID */
     async function loadVideo(id){
         try{
             hrSeek.needle = 0
             hrSeek.update([], 0)
             videoPeak.innerText = videoAvg.innerText = videoMin.innerText = '???'
+            if(player) player.destroy()
 
             const data = await (await fetch(`assets/json/${id}.json`)).json()
-            videoPeak.innerText = data.peak.toFixed(2) + ' bpm'
-            videoAvg.innerText = data.avg.toFixed(2) + ' bpm'
-            videoMin.innerText = data.min.toFixed(2) + ' bpm'
+            videoPeak.innerText = data.peak?.toFixed(2) + ' bpm'
+            videoAvg.innerText  = data.avg?.toFixed(2) + ' bpm'
+            videoMin.innerText  = data.min?.toFixed(2) + ' bpm'
 
             if(player) player.destroy()
             hrSeek.player = player = null
@@ -59,19 +55,10 @@ window.onload = async e => {
                 }
             })
         }catch(err){
-            alert('Sorry, couldn\'t load the video HR data! (︶︹︺)\nTry again later or a different video.')
+            videoSelect.value = ''
+            alert('Sorry, couldn\'t load the video HR data! (︶︹︺)\nPlease try again later or try a different video.')
             console.error(err)
             return
         }
     }
-
-    
-
-    /*const video = document.querySelector('video')
-    const update_needle = (e) => hrSeek.needle = e.target.currentTime / e.target.duration
-    video.ontimeupdate = update_needle
-    video.onseeking = update_needle
-    video.onloadedmetadata = async e => {
-
-    }*/
 }
