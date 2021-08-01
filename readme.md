@@ -36,9 +36,13 @@ In this stage there was a lot of trial-and-error to find the "perfect values" in
 
 Unfortunate thing about this automatic method is that `tesseract` did mistakes here and there, however most of the work is correct and thus the manual repairs were relatively short and could be automated (for eg. HR of `100` would be read as `700`, or `100` as `160`).
 
-Another thing about `tesseract` is that running I am running them in parallel using `parallel`, that's why in `./gather_video.sh` you see the `export OMP_THREAD_LIMIT=1`, so all CPU threads are utilized to its fullest. The OCR process itself takes approximately 30 minutes on a 8 thread CPU with a 3 hour stream.
+Another thing about `tesseract` is that running I am running them in parallel using `parallel`, that's why in `./gather_video.sh` you see the `export OMP_THREAD_LIMIT=1`, so all CPU threads are utilized to its fullest. The OCR process itself takes approximately an hour on a 8 thread CPU with a 3 hour stream.
 
-After all of that is done, the downloaded stream is located at `source`, individual frames at `frames` and the finished CSV with the values in `data`. For the web usage however, there is an extra script called `reparse.js`, which just takes all the data from the folder, calculates a few extra things and puts it together into a JSON, which is then placed into the `json` folder.
+After all of that is done, the downloaded stream is located at `source`, individual frames at `frames` and the finished CSV with the values in `data`. For the web usage however, there is an extra script called `reparse.js`, which just takes all the data from the folder, calculates a few extra things and puts it together into a JSON, which is then placed into the `json` folder of the web.
+
+## `test` folder
+
+It includes a few files that were a tad problematic for the OCR to detect correctly. Those files were used to fine-tune the `convert` command in the `ocr.sh` script.
 
 ## License
 

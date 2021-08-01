@@ -19,10 +19,14 @@ if [ "$1" == "clean" ]; then
     rm -rf "$SOURCE_DEST"
     rm -rf "$FRAMES_DEST"
     rm -rf "$DATA_DEST"
+
+    exit 0
 fi
 if [ "$1" == "clean_frames" ]; then
     echo "Cleaning up..."
     rm -rf "$FRAMES_DEST"
+
+    exit 0
 fi
 if [ "$1" == "trim" ]; then
     echo "Trimming frames..."
