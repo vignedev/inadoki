@@ -32,9 +32,9 @@ window.onload = async e => {
     // Optional and not-so-necessary portion, get the total statistics
     fetch('assets/json/stats.json').then(res => res.json())
     .then(data => {
-        totalPeak.innerText = data.peak?.toFixed(2) + ' bpm'
-        totalAvg.innerText  = data.avg?.toFixed(2) + ' bpm'
-        totalMin.innerText  = data.min?.toFixed(2) + ' bpm'
+        totalPeak.innerText = ((data && data.peak) ? data.peak.toFixed(2) : '???') + ' bpm'
+        totalAvg.innerText  = ((data && data.avg)  ? data.avg.toFixed(2)  : '???') + ' bpm'
+        totalMin.innerText  = ((data && data.min)  ? data.min.toFixed(2)  : '???') + ' bpm'
     })
 
     // Main portion, create UI elements, load the videos
@@ -87,9 +87,9 @@ window.onload = async e => {
             if(player) player.destroy()
 
             const data = await (await fetch(`assets/json/videos/${id}.json`)).json()
-            videoPeak.innerText = data.peak?.toFixed(2) + ' bpm'
-            videoAvg.innerText  = data.avg?.toFixed(2) + ' bpm'
-            videoMin.innerText  = data.min?.toFixed(2) + ' bpm'
+            videoPeak.innerText = ((data && data.peak) ? data.peak.toFixed(2) : '???') + ' bpm'
+            videoAvg.innerText  = ((data && data.avg)  ? data.avg.toFixed(2)  : '???') + ' bpm'
+            videoMin.innerText  = ((data && data.min)  ? data.min.toFixed(2)  : '???') + ' bpm'
 
             jsonDlBtn.disabled = csvDlBtn.disabled = false
             videoSelect.value = id
