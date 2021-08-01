@@ -5,8 +5,9 @@ const data = fs.readdirSync(__dirname + '/data').map(x => ({
     name: x
 })).filter(x => x.name.toLowerCase().endsWith('.csv'))
 
+let sum = 0, count = 0
 let total_stats = {
-    peak, avg, min
+    peak: 0, avg: 0, min: Number.MAX_VALUE
 }
 
 for(const csv of data){
@@ -22,9 +23,20 @@ for(const csv of data){
     
     let empty_hr_count = 0
     
+    let v_sum = file.reduce((acc,val) => {
+        if(!val.hr){
+            empty_hr_count++;
+            return acc
+        }
+        return acc + val.hr
+    }, 0)
+    let v_count = (file.length - empty_hr_count)
+    sum += v_sum
+    count += v_count
+
     let peak = file.reduce((acc,val) => val.hr ? Math.max(acc, val.hr) : acc, 0)
-    let avg = file.reduce((acc,val) => {if(!val.hr){empty_hr_count++; return acc} return acc + val.hr}, 0) / (file.length - empty_hr_count)
-    let min = file.reduce((acc,val) => val.hr ? Math.min(acc, val.hr) : acc, 9999)
+    let avg = v_sum / v_count
+    let min = file.reduce((acc,val) => val.hr ? Math.min(acc, val.hr) : acc, Number.MAX_VALUE)
 
     total_stats.peak = Math.max(peak, total_stats.peak)
     total_stats.min = Math.min(min, total_stats.min)
@@ -35,4 +47,5 @@ for(const csv of data){
     }))
 }
 
-console.log(total_stats)
+total_stats.avg = sum / count
+fs.writeFileSync(__dirname + '/../web/assets/json/stats.json', JSON.stringify(total_stats))

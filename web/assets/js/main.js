@@ -6,8 +6,21 @@ window.onload = async e => {
         videoMin    = document.querySelector('#video_stat #min'),
         videoSelect = document.querySelector('#video_select'),
         dummyOption = document.querySelector('#dummy_option')
+    const
+        totalPeak   = document.querySelector('#total_stat #peak'),
+        totalAvg    = document.querySelector('#total_stat #avg'),
+        totalMin    = document.querySelector('#total_stat #min')
     let player = null
 
+    // Optional and not-so-necessary portion, get the total statistics
+    fetch('assets/json/stats.json').then(res => res.json())
+    .then(data => {
+        totalPeak.innerText = data.peak?.toFixed(2) + ' bpm'
+        totalAvg.innerText  = data.avg?.toFixed(2) + ' bpm'
+        totalMin.innerText  = data.min?.toFixed(2) + ' bpm'
+    })
+
+    // Main portion, load the videos
     try{
         const videos = await (await fetch('assets/json/videos.json')).json()
         dummyOption.innerText = 'select a video (=w<)b<'
