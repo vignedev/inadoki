@@ -37,6 +37,10 @@ class HrSeek{
          * @type {number} */
         this.needle = 0
 
+        /** Render only every nth point
+         * @type {number|null} */
+        this.simplify = 0
+
         /** @type {{position: [number, number], hr: number}|null} */
         this.preview_needle = null
         this.preview_needle_y = false
@@ -73,10 +77,12 @@ class HrSeek{
 
         // Touch support
         this.canvas.addEventListener('touchmove', e => {
+            e.preventDefault()
             if(e.touches.length >= 1)
                 this.onmousemove(e.touches[0].clientX, e.touches[0].clientY)
         })
         this.canvas.addEventListener('touchend', e => {
+            e.preventDefault()
             if(e.touches.length <= 0 && this.preview_needle){
                 const relative_position = this.preview_needle.position[0]
 
@@ -98,15 +104,21 @@ class HrSeek{
             relativeX = (clientX - rect.left) / rect.width,
             relativeY = (clientY - rect.top) / rect.height
 
-        const lookup = this.lookUp(relativeX * this.total_seconds * 30)
-
-        if(!lookup || !lookup.hr){
-            this.preview_needle = null
+        if(this.preview_needle_y){
+            const lookup = this.lookUp(relativeX * this.total_seconds * 30)
+            if(!lookup || !lookup.hr){
+                this.preview_needle = null
+                return
+            }
+            this.preview_needle = {
+                position: [relativeX, relativeY],
+                hr: lookup.hr
+            }
             return
         }
         this.preview_needle = {
             position: [relativeX, relativeY],
-            hr: lookup.hr
+            hr: null
         }
     }
 
@@ -125,7 +137,9 @@ class HrSeek{
         let scale = window.devicePixelRatio
         this.fbElement.width  = this.canvas.width  = this.canvas.clientWidth * scale
         this.fbElement.height = this.canvas.height = this.canvas.clientHeight * scale
-        this.generateChart()
+        //this.ctx.scale(scale, scale)
+        this.font = `${window.devicePixelRatio}em Montserrat`
+        this.generateChart(scale)
     }
 
     /** Renders the chart based on the `data` and `total_seconds` into a framebuffer */
@@ -154,6 +168,7 @@ class HrSeek{
         this.framebuffer.beginPath()
 
         let pen_down = true
+        let index = 0
         for(const { frame, hr } of this.data){
             if(hr == null){
                 if(pen_down){
@@ -162,6 +177,8 @@ class HrSeek{
                 }
                 continue
             }
+
+            if((this.simplify && this.simplify != 0) && index++ % this.simplify != 0) continue
 
             let x = (frame / 30) / this.total_seconds * this.canvas.width,
                 y = (1.0 - ((hr-this.lower_bound) / (this.upper_bound-this.lower_bound))) * this.canvas.height
@@ -200,17 +217,6 @@ class HrSeek{
                 y: this.preview_needle.position[1] * this.canvas.height
             }
 
-            // let box_position = {
-            //     x: Math.min(
-            //         Math.max(
-            //             position.x - size.width / 2,
-            //             size.width / 4
-            //         ),
-            //         this.canvas.width - size.width * 1.25
-            //     ),
-            //     y: size.height * 1.5
-            // }
-
             this.ctx.fillStyle = this.ctx.strokeStyle = '#0000ff70'
             if(this.preview_needle_y){
                 let hr_y = (1.0 - ((this.preview_needle.hr-this.lower_bound) / (this.upper_bound-this.lower_bound))) * this.canvas.height
@@ -246,6 +252,11 @@ class HrSeek{
             this.ctx.lineTo(position.x, this.canvas.height)
 
             this.ctx.stroke()
+        }
+
+        if(!this.player){
+            this.ctx.fillStyle = '#000000aa'
+            this.ctx.fillRect(0, 0, this.ctx.width, this.ctx.height)
         }
 
         // Repeat the cycle

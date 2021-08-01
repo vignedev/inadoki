@@ -36,7 +36,18 @@
                 <button style="display: none;" disbled id="csvDl">CSV</button>
             </div>
 
-            <canvas id="hr_section" class="section"></canvas>
+            <div class="section" id="hr_section">
+                <canvas id="hr_chart">
+                </canvas>
+                <button id="hr_settings_toggle">settings</button>
+            </div>
+
+            <div class="section closed" id="chart_control">
+                <div>
+                    <label for="simplify">Quality: </label>
+                    <input id="simplify" type="range" value="100" min="0" max="100"/>
+                </div>
+            </div>
 
             <div id="statistics">
                 <div id="video_stat" class="section">
@@ -88,7 +99,7 @@
                         <div>Because it was 4AM and my mind wouldn’t shut up, and so one thing lead to another and here we are.</div>
 
                         <li>How?</li>
-                        <div>Simply, I just set up an OCR to read the bottom right corner and write down the results with the specific time. I will release the source code and all that jazz on my GitHub repository if there's interest, which also includes my thought process, ramblings and additional comments.</div>
+                        <div>Simply, I just set up an OCR to read the bottom right corner and write down the results with the specific time. I will release the source code and all that jazz on my GitHub repository once I get to it, which would also include my thought process, ramblings and additional comments.</div>
 
                         <li>Can I get the dataset?</li>
                         <div>Sure, that’s also available in the source code repository as CSV and JSON. You can also get them directly here by pressing the JSON button next to the video selection.</div>
