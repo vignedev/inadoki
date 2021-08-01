@@ -39,6 +39,7 @@ class HrSeek{
 
         /** @type {{position: [number, number], hr: number}|null} */
         this.preview_needle = null
+        this.preview_needle_y = false
 
         /** YouTube Embed player (for seeking)
          * @type {YT.Player} */
@@ -56,6 +57,7 @@ class HrSeek{
 
         // Allow click-seeking
         this.canvas.addEventListener('mousedown', e => {
+            e.preventDefault()
             const rect = this.canvas.getBoundingClientRect()
             const relative_position = (e.clientX - rect.left) / rect.width
 
@@ -65,29 +67,46 @@ class HrSeek{
         })
 
         // Make a preview needle
-        this.canvas.addEventListener('mousemove', e => {
-            const rect = this.canvas.getBoundingClientRect()
-            const relativeX = (e.clientX - rect.left) / rect.width,
-                relativeY = (e.clientY - rect.top) / rect.height
+        this.canvas.addEventListener('mousemove', e => this.onmousemove(e.clientX, e.clientY))
+        this.canvas.addEventListener('mouseleave', e => this.preview_needle = null)
 
-            const lookup = this.lookUp(relativeX * this.total_seconds * 30)
+        // Touch support
+        this.canvas.addEventListener('touchmove', e => {
+            if(e.touches.length >= 1)
+                this.onmousemove(e.touches[0].clientX, e.touches[0].clientY)
+        })
+        this.canvas.addEventListener('touchend', e => {
+            if(e.touches.length <= 0 && this.preview_needle){
+                const relative_position = this.preview_needle.position[0]
 
-            if(!lookup || !lookup.hr){
+                if(!this.player) return
+                this.player.seekTo(relative_position * this.total_seconds)
+                this.needle = relative_position
                 this.preview_needle = null
-                return
-            }
-            this.preview_needle = {
-                position: [relativeX, relativeY],
-                hr: lookup.hr
             }
         })
-        this.canvas.addEventListener('mouseleave', e => {
-            this.preview_needle = null
-        })
-
+        
         // Start the rendering cycle
         this.render = this.render.bind(this)
         this.render()
+    }
+
+    onmousemove(clientX, clientY){
+        const rect = this.canvas.getBoundingClientRect()
+        const
+            relativeX = (clientX - rect.left) / rect.width,
+            relativeY = (clientY - rect.top) / rect.height
+
+        const lookup = this.lookUp(relativeX * this.total_seconds * 30)
+
+        if(!lookup || !lookup.hr){
+            this.preview_needle = null
+            return
+        }
+        this.preview_needle = {
+            position: [relativeX, relativeY],
+            hr: lookup.hr
+        }
     }
 
     /**
@@ -191,36 +210,41 @@ class HrSeek{
             //     y: size.height * 1.5
             // }
 
-            let hr_y = (1.0 - ((this.preview_needle.hr-this.lower_bound) / (this.upper_bound-this.lower_bound))) * this.canvas.height
-            let box_position = {
-                x: size.width / 4,
-                y: size.height * 1.5 + hr_y - size.height
+            this.ctx.fillStyle = this.ctx.strokeStyle = '#0000ff70'
+            if(this.preview_needle_y){
+                let hr_y = (1.0 - ((this.preview_needle.hr-this.lower_bound) / (this.upper_bound-this.lower_bound))) * this.canvas.height
+                let box_position = {
+                    x: size.width / 4,
+                    y: size.height * 1.5 + hr_y - size.height
+                }
+
+                this.ctx.fillRect(
+                    box_position.x - size.width / 4,
+                    box_position.y - size.height * 1.5,
+                    size.width + size.width / 2,
+                    size.height * 2
+                )
+
+                this.ctx.beginPath()
+                this.ctx.moveTo(size.width * 1.5, hr_y)
+                this.ctx.lineTo(this.canvas.width, hr_y)
+                this.ctx.stroke()
+
+                this.ctx.fillStyle = '#ffffffff'
+                this.ctx.fillText(
+                    this.preview_needle.hr,
+                    box_position.x,
+                    box_position.y
+                )
             }
 
-            this.ctx.fillStyle = this.ctx.strokeStyle = '#0000ff80'
-            this.ctx.fillRect(
-                box_position.x - size.width / 4,
-                box_position.y - size.height * 1.5,
-                size.width + size.width / 2,
-                size.height * 2
-            )
             this.ctx.lineWidth = 2
             this.ctx.beginPath()
 
             this.ctx.moveTo(position.x, 0)
             this.ctx.lineTo(position.x, this.canvas.height)
 
-            this.ctx.moveTo(size.width * 1.5, hr_y)
-            this.ctx.lineTo(this.canvas.width, hr_y)
-
             this.ctx.stroke()
-
-            this.ctx.fillStyle = '#ffffffff'
-            this.ctx.fillText(
-                this.preview_needle.hr,
-                box_position.x,
-                box_position.y
-            )
         }
 
         // Repeat the cycle
