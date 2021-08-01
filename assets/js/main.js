@@ -42,6 +42,9 @@ window.onload = async e => {
             option.innerText = title
             videoSelect.appendChild(option)
         }
+
+        const given_id = window.location.hash.substr(1)
+        if(given_id) await loadVideo(given_id)
     }catch(err){
         dummyOption.innerText = 'Failed to load videos (´°ω°`) sorry...'
         return
@@ -73,7 +76,8 @@ window.onload = async e => {
             videoMin.innerText  = data.min?.toFixed(2) + ' bpm'
 
             jsonDlBtn.disabled = csvDlBtn.disabled = false
-
+            videoSelect.value = id
+            
             if(player) player.destroy()
             hrSeek.player = player = null
 
@@ -88,11 +92,15 @@ window.onload = async e => {
                     }
                 }
             })
+
+            window.location.hash = id
         }catch(err){
             videoSelect.value = ''
             alert('Sorry, couldn\'t load the video HR data! (︶︹︺)\nPlease try again later or try a different video.')
             console.error(err)
             jsonDlBtn.disabled = csvDlBtn.disabled = true
+            
+            window.location.hash = ''
             return
         }
     }
