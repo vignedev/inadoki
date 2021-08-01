@@ -115,6 +115,7 @@ button:disabled, select:disabled{
     height: 256px;
     width: 90vw;
     cursor: pointer;
+    font-size: .7rem;
 }
 
 #statistics{

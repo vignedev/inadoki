@@ -37,10 +37,17 @@ class HrSeek{
          * @type {number} */
         this.needle = 0
 
+        /** @type {{position: [number, number], hr: number}|null} */
+        this.preview_needle = null
+
         /** YouTube Embed player (for seeking)
          * @type {YT.Player} */
         this.player = null
 
+        /** @type {string} */
+        this.font = '1em Montserrat'
+
+        // ------------------------------------------------ //
 
         // Ensure correct size is displayed
         this.correct_size = this.correct_size.bind(this)
@@ -55,6 +62,27 @@ class HrSeek{
             if(!this.player) return
             this.player.seekTo(relative_position * this.total_seconds)
             this.needle = relative_position
+        })
+
+        // Make a preview needle
+        this.canvas.addEventListener('mousemove', e => {
+            const rect = this.canvas.getBoundingClientRect()
+            const relativeX = (e.clientX - rect.left) / rect.width,
+                relativeY = (e.clientY - rect.top) / rect.height
+
+            const lookup = this.lookUp(relativeX * this.total_seconds * 30)
+
+            if(!lookup || !lookup.hr){
+                this.preview_needle = null
+                return
+            }
+            this.preview_needle = {
+                position: [relativeX, relativeY],
+                hr: lookup.hr
+            }
+        })
+        this.canvas.addEventListener('mouseleave', e => {
+            this.preview_needle = null
         })
 
         // Start the rendering cycle
@@ -82,6 +110,8 @@ class HrSeek{
 
     /** Renders the chart based on the `data` and `total_seconds` into a framebuffer */
     generateChart(){
+        // Clear previous data
+        this.framebuffer.font = this.font
         this.framebuffer.clearRect(0, 0, this.canvas.width, this.canvas.height)
         
         // Draw lines & legend behind
@@ -95,7 +125,6 @@ class HrSeek{
             this.framebuffer.moveTo(0, height)
             this.framebuffer.lineTo(this.canvas.width, height)
             this.framebuffer.stroke()
-
             this.framebuffer.fillText(this.lower_bound + (max-n) * (this.upper_bound - this.lower_bound) / max, 4, height - 2)
         }
 
@@ -127,6 +156,7 @@ class HrSeek{
     /** Continuous rendering cycle */
     render(){
         // Wipe out previous data
+        this.ctx.font = 'bold ' + this.font
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
         // Rendering the (assumingly) pre-generated chart
@@ -139,6 +169,59 @@ class HrSeek{
         this.ctx.moveTo(this.needle * this.canvas.width, 0)
         this.ctx.lineTo(this.needle * this.canvas.width, this.canvas.height)
         this.ctx.stroke()
+
+        // Rendering the preview needle
+        if(this.preview_needle){
+            let size = this.ctx.measureText(this.preview_needle.hr)
+            size.height = (size.actualBoundingBoxAscent + size.actualBoundingBoxDescent) // a lil' bit of mutation
+
+            let position = {
+                x: this.preview_needle.position[0] * this.canvas.width,
+                y: this.preview_needle.position[1] * this.canvas.height
+            }
+
+            // let box_position = {
+            //     x: Math.min(
+            //         Math.max(
+            //             position.x - size.width / 2,
+            //             size.width / 4
+            //         ),
+            //         this.canvas.width - size.width * 1.25
+            //     ),
+            //     y: size.height * 1.5
+            // }
+
+            let hr_y = (1.0 - ((this.preview_needle.hr-this.lower_bound) / (this.upper_bound-this.lower_bound))) * this.canvas.height
+            let box_position = {
+                x: size.width / 4,
+                y: size.height * 1.5 + hr_y - size.height
+            }
+
+            this.ctx.fillStyle = this.ctx.strokeStyle = '#0000ff80'
+            this.ctx.fillRect(
+                box_position.x - size.width / 4,
+                box_position.y - size.height * 1.5,
+                size.width + size.width / 2,
+                size.height * 2
+            )
+            this.ctx.lineWidth = 2
+            this.ctx.beginPath()
+
+            this.ctx.moveTo(position.x, 0)
+            this.ctx.lineTo(position.x, this.canvas.height)
+
+            this.ctx.moveTo(size.width * 1.5, hr_y)
+            this.ctx.lineTo(this.canvas.width, hr_y)
+
+            this.ctx.stroke()
+
+            this.ctx.fillStyle = '#ffffffff'
+            this.ctx.fillText(
+                this.preview_needle.hr,
+                box_position.x,
+                box_position.y
+            )
+        }
 
         // Repeat the cycle
         requestAnimationFrame(this.render)
