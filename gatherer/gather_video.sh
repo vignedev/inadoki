@@ -9,8 +9,8 @@ SOURCE_DEST="$BASE"/source
 FRAMES_DEST="$BASE"/frames
 DATA_DEST="$BASE"/data
 
-SKIP_DOWNLOAD=1
-SKIP_FRAMER=1
+SKIP_DOWNLOAD=0
+SKIP_FRAMER=0
 SKIP_OCR=0
 
 # Cleanup
@@ -23,6 +23,20 @@ fi
 if [ "$1" == "clean_frames" ]; then
     echo "Cleaning up..."
     rm -rf "$FRAMES_DEST"
+fi
+if [ "$1" == "trim" ]; then
+    echo "Trimming frames..."
+
+    for VIDEO in "$FRAMES_DEST"/*; do
+        for FILE in $(ls "$VIDEO" | \
+            grep -F '.png' | \
+            awk 'NR % 15 != 0' | \
+            awk "{ print \"$VIDEO/\" \$0 }"); do
+            rm "$FILE"
+        done
+    done
+
+    exit 0
 fi
 
 # Create a storage for downloaded videos and frames
@@ -119,10 +133,10 @@ ocr(){
 # gather 'https://www.youtube.com/watch?v=xBp10i8Noqo' 180 11081
 
 # 【SOMA】 SO MAny Places to Explore!! 【#1】
-gather 'https://www.youtube.com/watch?v=5kaQs6GAeII' 210 11420
+# gather 'https://www.youtube.com/watch?v=5kaQs6GAeII' 210 11420
 
 # 【SOMA】 No Food Wars Here 【#2】
-# gather 'https://www.youtube.com/watch?v=5uDMkQ38b3k' 227 15697
+gather 'https://www.youtube.com/watch?v=5uDMkQ38b3k' 227 15697
 
 # 【SOMA】 Robodachiiiiii 【#3】
-# gather 'https://www.youtube.com/watch?v=nj1GHW0ytq4' 0 100
+gather 'https://www.youtube.com/watch?v=nj1GHW0ytq4' 254 13771
