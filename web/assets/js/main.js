@@ -73,7 +73,7 @@ window.onload = async e => {
 
     // YouTube's iframe API doesn't provide any events for time change, so we need to monitor it ourself
     setInterval(() => {
-        if(!player && !player.getCurrentTime && !player.getDuration) return
+        if(player == null || !player || !player.getCurrentTime || !player.getDuration) return
         hrSeek.needle = (player.getCurrentTime() / player.getDuration())
     }, 1000) // check every second, we don't need maximum precision
 
