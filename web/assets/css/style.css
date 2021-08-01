@@ -25,7 +25,7 @@ body{
     align-items: center;
     max-width: 80vw;
     width: 50rem; /* 67.5rem */
-    padding-bottom: 10rem;
+    padding-bottom: 2rem;
 }
 .container > * {
     width: 100%;
@@ -53,13 +53,44 @@ h1{
     padding-top: 10vmin;
 }
 
-select#video_select{
+#video_select{
+    margin-top: 0;
+    border-radius: 0 0 8px 8px;
+    z-index: 1;
+    border: none !important;
+    overflow: hidden;
+    display: flex;
+}
+
+#video_select *{
+    transition: background .2s;
+}
+#video_select select{
     font-family: 'Montserrat', sans-serif;
-    border: 2px var(--ink-black) solid;
     outline: none;
     background: white;
     padding: 8px;
+    border: none;
     color: var(--ink-black);
+    width: 100%;
+}
+#video_select button{
+    cursor: pointer;
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, .2);
+    padding: 0 1em;
+    background: white;
+    color: black;
+}
+button:disabled, select:disabled{
+    background: rgb(230, 230, 230) !important;
+}
+
+#video_select button:hover, #video_select select:hover{
+    background: rgb(240, 240, 240);
+}
+#video_select button:active, #video_select select:active{
+    background: white;
 }
 
 #video_section{
@@ -83,6 +114,7 @@ select#video_select{
     background-color: #e1d8ef;
     height: 256px;
     width: 90vw;
+    cursor: pointer;
 }
 
 #statistics{
@@ -182,9 +214,52 @@ s{
     margin-bottom: 0;
     border-radius: 8px 8px 0 0;
 }
-#video_select{
-    margin-top: 0;
-    border-radius: 0 0 8px 8px;
-    z-index: 1;
-    border: none !important;
+
+/* Footer */
+#footer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+#footer > span{
+    padding: 0 .5em;
+    opacity: 0.5;
+    width: 0;
+    white-space: pre;
+}
+#footer > span:first-of-type{
+    direction: rtl;
+}
+#footer .icon {
+    margin: 0 .2em;
+}
+
+/*  Icons  */
+.icon{
+    width: 1.5em; height: 1.5em;
+    background: white;
+    mask-size: cover;
+    -webkit-mask-size: cover;
+    transition: opacity .3s;
+    cursor: pointer;
+}
+a.icon{
+    opacity: 0.5;
+}
+a.icon:hover{
+    opacity: 1.0;
+}
+.icon.youtube{
+    mask-image: url('/assets/img/si/youtube.svg');
+    -webkit-mask-image: url('/assets/img/si/youtube.svg');
+}
+.icon.twitter{
+    mask-image: url('/assets/img/si/twitter.svg');
+    -webkit-mask-image: url('/assets/img/si/twitter.svg');
+}
+.icon.github{
+    mask-image: url('/assets/img/si/github.svg');
+    -webkit-mask-image: url('/assets/img/si/github.svg');
 }

@@ -1,16 +1,25 @@
 window.onload = async e => {
-    const hrSeek = new HrSeek('canvas#hr_section')
+    const
+        hrSeek = new HrSeek('canvas#hr_section'),
+        footer = document.querySelector('#random_footer')
     const
         videoPeak   = document.querySelector('#video_stat #peak'),
         videoAvg    = document.querySelector('#video_stat #avg'),
         videoMin    = document.querySelector('#video_stat #min'),
-        videoSelect = document.querySelector('#video_select'),
-        dummyOption = document.querySelector('#dummy_option')
+        videoSelect = document.querySelector('#video_select select'),
+        dummyOption = document.querySelector('#dummy_option'),
+        jsonDlBtn   = document.querySelector('button#jsonDl'),
+        csvDlBtn    = document.querySelector('button#csvDl')
     const
         totalPeak   = document.querySelector('#total_stat #peak'),
         totalAvg    = document.querySelector('#total_stat #avg'),
         totalMin    = document.querySelector('#total_stat #min')
     let player = null
+
+    // Hook up UI elements
+    jsonDlBtn.onclick = e => download(`assets/json/videos/${videoSelect.value}.json`, `${videoSelect.value}.json`)
+    csvDlBtn.onclick = e => download(`assets/csv/videos/${videoSelect.value}.csv`, `${videoSelect.value}.csv`)
+    videoSelect.onchange = async e => await loadVideo(e.target.value)
 
     // Optional and not-so-necessary portion, get the total statistics
     fetch('assets/json/stats.json').then(res => res.json())
@@ -20,11 +29,12 @@ window.onload = async e => {
         totalMin.innerText  = data.min?.toFixed(2) + ' bpm'
     })
 
-    // Main portion, load the videos
+    // Main portion, create UI elements, load the videos
     try{
         const videos = await (await fetch('assets/json/videos.json')).json()
-        dummyOption.innerText = 'select a video (=w<)b<'
+        dummyOption.innerText = 'select a video (=w<)b'
         videoSelect.disabled = false
+        jsonDlBtn.disabled = csvDlBtn.disabled = true
 
         for(const [id, title] of Object.entries(videos)){
             const option = document.createElement('option')
@@ -37,7 +47,16 @@ window.onload = async e => {
         return
     }
 
-    videoSelect.onchange = async e => await loadVideo(e.target.value)
+    // Just a random thing I thought up
+    const messages = [
+        'with sleep deprivation',
+        'with pain-staking ocr',
+        'with over 24gb of source materials',
+        'with 4h naps',
+        'with pain tako',
+        'with aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    ]
+    footer.innerText = messages[Math.floor(Math.random() * messages.length)]
 
     /** Loads up a video and updates the HR chart
      * @param {string} id YouTube stream's ID */
@@ -52,6 +71,8 @@ window.onload = async e => {
             videoPeak.innerText = data.peak?.toFixed(2) + ' bpm'
             videoAvg.innerText  = data.avg?.toFixed(2) + ' bpm'
             videoMin.innerText  = data.min?.toFixed(2) + ' bpm'
+
+            jsonDlBtn.disabled = csvDlBtn.disabled = false
 
             if(player) player.destroy()
             hrSeek.player = player = null
@@ -71,7 +92,21 @@ window.onload = async e => {
             videoSelect.value = ''
             alert('Sorry, couldn\'t load the video HR data! (︶︹︺)\nPlease try again later or try a different video.')
             console.error(err)
+            jsonDlBtn.disabled = csvDlBtn.disabled = true
             return
         }
+    }
+
+    /**
+     * Invokes a download
+     * @param {string} url URL of the file
+     * @param {string} name Final filename
+     */
+    function download(url, name){
+        const temp = document.createElement('a')
+        temp.href = url
+        temp.target = '_blank'
+        temp.download = name
+        temp.click()
     }
 }

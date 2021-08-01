@@ -1,6 +1,11 @@
 <html>
     <head>
-        <title>ina_kokoro</title>
+        <title>Ninomae Ina'nis Horror Week HR Chart</title>
+        <meta property="og:title" content="Ninomae Ina'nis Horror Week HR Chart"/>
+        <meta property="og:type" content="website"/>
+        <meta property="og:image" content="https://takobeat.github.io/assets/img/embed.png"/>
+        <meta property="og:url" content="https://takobeat.github.io/"/>
+
         <link rel="stylesheet" href="assets/css/style.css"/>
         <script src="https://www.youtube.com/iframe_api"></script>
         <script src="assets/js/hrseek.js"></script>
@@ -20,9 +25,14 @@
                 </div>
             </div>
 
-            <select disabled id="video_select" class="section">
-                <option value="" id="dummy_option" selected disabled hidden>_(ˇωˇ」∠)_zzzZZ</option>
-            </select>
+            <div class="section" id="video_select">
+                <select disabled>
+                    <option value="" id="dummy_option" selected disabled hidden>_(ˇωˇ」∠)_zzzZZ</option>
+                </select>
+
+                <button disbled id="jsonDl">JSON</button>
+                <button style="display: none;" disbled id="csvDl">CSV</button>
+            </div>
 
             <canvas id="hr_section" class="section"></canvas>
 
@@ -76,10 +86,10 @@
                         <div>Because it was 4AM and my mind wouldn’t shut up, and so one thing lead to another and here we are.</div>
 
                         <li>How?</li>
-                        <div>Simply, I just set up an OCR to read the bottom right corner and write down the results with the specific time. I have released the source code and all that jazz on my GitHub repository here, which also includes my thought process and additional comments. Please bare in mind that it was 4AM, the quality of it may not be as clear as it could be.</div>
+                        <div>Simply, I just set up an OCR to read the bottom right corner and write down the results with the specific time. I will release the source code and all that jazz on my GitHub repository if there's interest, which also includes my thought process, ramblings and additional comments.</div>
 
                         <li>Can I get the dataset?</li>
-                        <div>Sure, that’s also available in the source code repository as CSV. If you want them as JSON, those are in the website's source code.</div>
+                        <div>Sure, that’s also available in the source code repository as CSV and JSON. You can also get them directly here by pressing the JSON button next to the video selection.</div>
 
                         <li>Go to bed.</li>
                         <div>Oh boy, I wish I could.</div>
@@ -98,7 +108,7 @@
                 </div>
             </div>
 
-            <div id="credits" class="section text_section">
+            <!-- <div id="credits" class="section text_section">
                 <div>
                     <h1>Credit & Sources</h1>
                     <table>
@@ -106,21 +116,37 @@
                             <tr>
                                 <th>Ninomae Ina'nis</th>
                                 <td>the priestess, the streams, the tako</td>
-                                <td>yt, twt</td>
+                                <td>
+                                    <img height="24" width="24" src="assets/img/si/youtube.svg"/>
+                                    <img height="24" width="24" src="assets/img/si/twitter.svg"/>
+                                </td>
                             </tr>
                             <tr>
                                 <th>LUMINA</th>
                                 <td>designer of ina's branding guide</td>
-                                <td>twt</td>
+                                <td>
+                                    <img height="24" width="24" src="assets/img/si/twitter.svg"/>
+                                </td>
                             </tr>
                             <tr>
                                 <th>vignedev</th>
                                 <td>scripting, data collection, web</td>
-                                <td>yt, twt, gthb</td>
+                                <td>
+                                    <img height="24" width="24" src="assets/img/si/youtube.svg"/>
+                                    <img height="24" width="24" src="assets/img/si/twitter.svg"/>
+                                    <img height="24" width="24" src="assets/img/si/github.svg"/>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+            </div> -->
+
+            <div id="footer">
+                <span>made by vignedev</span>
+                <a href="https://twitter.com/vignedev" target="_blank" class="icon twitter"></a>
+                <a href="https://github.com/vignedev" target="_blank" class="icon github"></a>
+                <span id="random_footer">with sleep deprivation</span>
             </div>
         </div>
     </body>
