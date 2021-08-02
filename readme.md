@@ -4,41 +4,67 @@ Ina streamed with a heartrate monitor during her Horror week. So, naturally, som
 
 ## Data gatherer
 
-This branch is solely for the the data gathering part from the streams, for the web source code (as well as pre-generated JSON files) check out the `web` branch.
+This branch is solely for the data gathering from the streams. For the web source code (as well as pre-generated JSON files) check out the `web` branch.
+
+### Requirements 
 
 For `gatherer`, you'll most likely need a UNIX system that has the following:
 
 * `tesseract>=4` - OCR system (with `tessdata`)
-* `imagemagick` - for preparing a section to be OCR'd
+* `imagemagick` - preprocessing frames for OCR
 * `ffmpeg` - converting the stream into frames
 * `youtube-dl` - downloading the stream
-* `nodejs` - optional, for web
+* `nodejs` - optional, converting data for web
 
-After that, you just need to call `./gather_video.sh <youtube_url> <time_start> <time_end>`. For information about these parameters, read below.
+### Usage
 
-While the `./gather_video.sh` is in my opinion legible *enough*, I'll try to explain the process of how I went on doing this. Note: I did say it is *legible*, not a *smart solution*.
+Please note that while I did my best to make the script as flexible as possible, for uses other that Ina's streams during the Horror week *will* require manually adjusting hardcoded values that are described below.
 
-Skipping the parts about the cleanup and setup, the function of interest is of course `gather()` which accepts two parameters: *`stream URL`*, *`time start in seconds`* and *`time end in seconds`*. The times are present to trim out and not scan the portions of the stream where the HR is not present, thus cutting down time of computing.
+#### `./gather_video.sh`
 
-In the function itself you can see the variable `CROP`, which is the setting that controls which portion of the screen is going to get cropped out. It's based on relative numbers and thus should work regardless of resolution.
+This script is responsible for nearly if not all of the work required. 
 
-After that the script downloads the stream using `youtube-dl`, it has hard coded format type `247`, which is a 720p `webm` at 30 FPS. While looking at the stream, the heartrate monitor changes like every half-a-second, so a 60 FPS stream would be overkill.
+```sh
+# Example usage
+$ ./gather_video.sh "$VIDEO_URL" "$TIME_START" "$TIME_END"
+```
 
-Once the download is finished, the stream is getting cropped and extracted into an image sequence using `ffmpeg`. Unfortunately, I wasn't able to figure out how to skip frames during this process, which would have saved storage space and/or time. More on that below.
+The command itself expects 3 arguments:
+* `VIDEO_URL` - URL to said video to be downloaded and then processed
+* `TIME_START` - Time in seconds from which to start extracting frames
+* `TIME_END` - Time in seconds to which to stop extracting frames
 
-And to top it all off is the OCR.
+The script itself expects the URL to be a YouTube URL (because of the rubbish `grep` video ID extractor), if you wish to use different platforms you'll need to edit for your purpose.
 
-Firstly, it collects *all of the frames*, and selects *every 15th* frame, because as I said before, the HR monitor changes every half-a-second, thus we should always capture every number in these select frames, **significantly** reducing computing time from up to 20 hours down to an hour.
+Parameters `TIME_START` and `TIME_END` are for specifying the range of which to process to avoid processing empty or invalid frames for time and space conserving reasons.
 
-Before the OCR itself begins, the image is being adjusted so it is more clearer what is being read using `convert`, which converts it into a black and white 1bpp image with only the number visible. That is then piped into `tesseract` which does the magic needed.
+#### `./ocr.sh`
 
-In this stage there was a lot of trial-and-error to find the "perfect values" in both the preparation phase and the actual OCR phase. For eg. tweaking the threshold value for `convert` yielded in sometimes better results etc. I have also set `tesseract` to do only numbers, thus avoiding random letters in the scan.
+This script is called with its sole argument being the path to the image to be read, after which it pre-processes the image and performs OCR reading on it.
 
-Unfortunate thing about this automatic method is that `tesseract` did mistakes here and there, however most of the work is correct and thus the manual repairs were relatively short and could be automated (for eg. HR of `100` would be read as `700`, or `100` as `160`).
+The return value is a CSV row in format `$FILENAME;$OCR_RESULT`. The `$FILENAME` in our case would be the frame number.
 
-Another thing about `tesseract` is that running I am running them in parallel using `parallel`, that's why in `./gather_video.sh` you see the `export OMP_THREAD_LIMIT=1`, so all CPU threads are utilized to its fullest. The OCR process itself takes approximately an hour on a 8 thread CPU with a 3 hour stream.
+The "pre-processing" part is basically adjusting the image colors til only the number is visible in a 1bpp image. Again, if you wish to use the script for other videos, this is the ~~value~~ command you want to tweak.
 
-After all of that is done, the downloaded stream is located at `source`, individual frames at `frames` and the finished CSV with the values in `data`. For the web usage however, there is an extra script called `reparse.js`, which just takes all the data from the folder, calculates a few extra things and puts it together into a JSON, which is then placed into the `json` folder of the web.
+### What does it do?
+
+You can take a peek inside the `./gather_video.sh` file, which has been commented quite well in my opinion. Down below are more information about it which may include my internal thoughts.
+
+Also please do note that I *do not consider the script to be optimized nor a smart solution*.
+
+The script includes some "hidden options" for cleaning up data, however these are truly just experimental and should not be used.
+
+All of the arguments to the script are passed along to the `gather()` function (which acts like the script itself).
+
+The first step is obtaining the stream itself, which is done by using `youtube-dl`. I have hardcoded the format ID of `247`, being the smallest 720p30 video only file. From my testing, 720p seemed to be the "sweet spot" between legibility and file size. 60FPS was out of the question, since it'd be just wasteful, given that the HR changes (from the looks of it) every half a second.
+
+After the download is completed, the stream is then cut up into separate frames. During this process, there's a variable called `$CROP`, which specifies which portion of the video is required. If you're planning to use this script for others' stream, this is most likely the value you need to tweak. During this stage, variables `$TIME_START` and `$TIME_END` are utilized to just extract the needed part.
+
+The final part of all of this is the OCR itself. The script takes *every 15th* extracted frame and does `./ocr.sh` on it, because the footage is expected to be 30FPS and the heartrate monitor changes every half a second. Doing so reduces the computation time from up to 24 hours down to an hour (with theoretically conserving every HR value). This stage is also ran in `parallel`, hence the `OMP_THREAD_LIMIT`. I have not tested it thoroughly whether this hinders or helps the performance though.
+
+At this point you can consider the work to be done, however `tesseract` was (or at least in my case) quite inaccurate in a few parts. You can test it out on a few problematic frames in the `test/` folder (eg. 100 is read as 700, 100 as 160, ...). However since most of the work done automatically was correct, manually editing these values was easy and finding them even easier (given that a human heart shouldn't be able to go from 99 to 160 in 0.5s).
+
+If you are satisfied with the CSV results in the `data/` folder, you are finished. If you want to process these results into a format that the `web` branches needs, you'll need to call the `./reparse.js` script. All it does is converts all of CSV files into JSON and calculates their peak, average and lowest values for each video *and* all videos in total. The script itself will create a `json/` folder, which is then just copied over into the `assets/` folder of the `web` branch.
 
 ## `test` folder
 
