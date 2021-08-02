@@ -50,6 +50,14 @@ class HrSeek{
         /** @type {string} */
         this.font = '1em Montserrat'
 
+        /** @type {{message: string}} */
+        this.messages = {
+            'title': 'no video loaded',
+            'subtitle': 'btw you can click on the chart to jump to a specific point in the video!'
+        }
+        /** @type {HTMLElement} */
+        this.message_container = null
+
         // ------------------------------------------------ //
 
         // Ensure correct size is displayed
@@ -79,6 +87,10 @@ class HrSeek{
             if(e.touches.length >= 1)
                 this.onmousemove(e.touches[0].clientX, e.touches[0].clientY)
         })
+        this.canvas.addEventListener('touchstart', e => {
+            if(!this.preview_needle && e.touches.length >= 1)
+                this.onmousemove(e.touches[0].clientX, e.touches[0].clientY)
+        })
         this.canvas.addEventListener('touchend', e => {
             e.preventDefault()
             if(e.touches.length <= 0 && this.preview_needle){
@@ -91,6 +103,18 @@ class HrSeek{
             }
         })
         
+        // Make a "no video loaded notice"
+        this.message_container = document.createElement('div')
+        this.message_container.id = 'msg_container'
+        this.canvas.parentElement.appendChild(this.message_container)
+        for(const [className, text] of Object.entries(this.messages)){
+            const elem = document.createElement('div')
+            elem.className = className
+            elem.innerText = text
+            this.message_container.appendChild(elem)
+        }
+
+
         // Start the rendering cycle
         this.render = this.render.bind(this)
         this.render()
@@ -252,10 +276,7 @@ class HrSeek{
             this.ctx.stroke()
         }
 
-        if(!this.player){
-            this.ctx.fillStyle = '#000000aa'
-            this.ctx.fillRect(0, 0, this.ctx.width, this.ctx.height)
-        }
+        this.message_container.style.opacity = this.player ? 0.0 : 1.0
 
         // Repeat the cycle
         requestAnimationFrame(this.render)

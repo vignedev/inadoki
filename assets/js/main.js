@@ -115,7 +115,8 @@ window.onload = async e => {
             alert('Sorry, couldn\'t load the video HR data! (︶︹︺)\nPlease try again later or try a different video.')
             console.error(err)
             jsonDlBtn.disabled = csvDlBtn.disabled = true
-            
+            if(player) player.destroy()
+            hrSeek.player = player = null
             window.location.hash = ''
             return
         }
