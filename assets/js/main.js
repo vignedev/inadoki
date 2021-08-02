@@ -106,6 +106,9 @@ window.onload = async e => {
                     onStateChange: e => {
                         hrSeek.needle = (e.target.getCurrentTime() / e.target.getDuration())
                     }
+                },
+                playerVars: {
+                    playsinline: 1
                 }
             })
 
