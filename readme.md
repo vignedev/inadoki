@@ -16,7 +16,7 @@ For `gatherer`, you'll most likely need a UNIX system that has the following:
 
 After that, you just need to call `./gather_video.sh <youtube_url> <time_start> <time_end>`. For information about these parameters, read below.
 
-While the `./gather_video.sh` is in my opinion legible, I'll try to explain the process of how I went on doing this.
+While the `./gather_video.sh` is in my opinion legible *enough*, I'll try to explain the process of how I went on doing this. Note: I did say it is *legible*, not a *smart solution*.
 
 Skipping the parts about the cleanup and setup, the function of interest is of course `gather()` which accepts two parameters: *`stream URL`*, *`time start in seconds`* and *`time end in seconds`*. The times are present to trim out and not scan the portions of the stream where the HR is not present, thus cutting down time of computing.
 
